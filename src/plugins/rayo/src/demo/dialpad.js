@@ -70,7 +70,7 @@
       
       if (!callbacks) return this;
   
-      // remove all handlers
+      // remove all handler
       if (arguments.length === 1) {
           delete this.callbacks[event];
           return this;
@@ -83,7 +83,7 @@
   };
   
   // Emit `event` with the given args.
-  // also calls any `*` handlers
+  // also calls any `*` handler
   WildEmitter.prototype.emit = function (event) {
       var args = [].slice.call(arguments, 1),
           callbacks = this.callbacks[event],
@@ -107,7 +107,7 @@
       return this;
   };
   
-  // Helper for for finding special wildcard event handlers that match the event
+  // Helper for for finding special wildcard event handler that match the event
   WildEmitter.prototype.getWildcardCallbacks = function (eventName) {
       var item,
           split,
@@ -159,7 +159,7 @@
     this.number = '';
     this.footer = true;
 
-    // register handlers passed in on init
+    // register handler passed in on init
     for (var item in availableCallbacks) {
       if (config[item]) this.on(availableCallbacks[item], config[item]);
     }
@@ -199,7 +199,7 @@
       buttons = this.dom.querySelectorAll('button'),
       callButton = this.dom.querySelector('.call');
 
-    // for button handlers
+    // for button handler
     Array.prototype.forEach.call(buttons, function (button) {
       button.addEventListener('click', function (e) {
         var data = this.attributes['data-value'],

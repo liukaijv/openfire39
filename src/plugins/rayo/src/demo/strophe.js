@@ -1050,7 +1050,7 @@ Strophe.Builder.prototype = {
 
 
 /** PrivateClass: Strophe.Handler
- *  _Private_ helper class for managing stanza handlers.
+ *  _Private_ helper class for managing stanza handler.
  *
  *  A Strophe.Handler encapsulates a user provided callback function to be
  *  executed when matching stanzas are received by the connection.
@@ -1200,7 +1200,7 @@ Strophe.Handler.prototype = {
 };
 
 /** PrivateClass: Strophe.TimedHandler
- *  _Private_ helper class for managing timed handlers.
+ *  _Private_ helper class for managing timed handler.
  *
  *  A Strophe.TimedHandler encapsulates a user provided callback that
  *  should be called after a certain period of time or at regular
@@ -1388,10 +1388,10 @@ Strophe.Request.prototype = {
  *  events like authentication failure, disconnection, or connection
  *  complete.
  *
- *  The user will also have several event handlers defined by using
+ *  The user will also have several event handler defined by using
  *  addHandler() and addTimedHandler().  These will allow the user code to
  *  respond to interesting stanzas or do something periodically with the
- *  connection.  These handlers will be active once authentication is
+ *  connection.  These handler will be active once authentication is
  *  finished.
  *
  *  To send data to the connection, use send().
@@ -1904,7 +1904,7 @@ Strophe.Connection.prototype = {
      *  this function if you wish to remove a handler with
      *  deleteTimedHandler().
      *
-     *  Note that user handlers are not active until authentication is
+     *  Note that user handler are not active until authentication is
      *  successful.
      *
      *  Parameters:
@@ -1934,7 +1934,7 @@ Strophe.Connection.prototype = {
     deleteTimedHandler: function (handRef)
     {
         // this must be done in the Idle loop so that we don't change
-        // the handlers during iteration
+        // the handler during iteration
         this.removeTimeds.push(handRef);
     },
 
@@ -1996,7 +1996,7 @@ Strophe.Connection.prototype = {
     deleteHandler: function (handRef)
     {
         // this must be done in the Idle loop so that we don't change
-        // the handlers during iteration
+        // the handler during iteration
         this.removeHandlers.push(handRef);
     },
 
@@ -2407,7 +2407,7 @@ Strophe.Connection.prototype = {
             this.connected = false;
         }
 
-        // delete handlers
+        // delete handler
         this.handlers = [];
         this.timedHandlers = [];
         this.removeTimeds = [];
@@ -2421,7 +2421,7 @@ Strophe.Connection.prototype = {
      *
      *  Except for _connect_cb handling the initial connection request,
      *  this function handles the incoming data for all requests.  This
-     *  function also fires stanza handlers that match each incoming
+     *  function also fires stanza handler that match each incoming
      *  stanza.
      *
      *  Parameters:
@@ -2444,7 +2444,7 @@ Strophe.Connection.prototype = {
             this.rawInput(Strophe.serialize(elem));
         }
 
-        // remove handlers scheduled for deletion
+        // remove handler scheduled for deletion
         var i, hand;
         while (this.removeHandlers.length > 0) {
             hand = this.removeHandlers.pop();
@@ -2454,7 +2454,7 @@ Strophe.Connection.prototype = {
             }
         }
 
-        // add handlers scheduled for addition
+        // add handler scheduled for addition
         while (this.addHandlers.length > 0) {
             this.handlers.push(this.addHandlers.pop());
         }
@@ -2494,13 +2494,13 @@ Strophe.Connection.prototype = {
         var that = this;
         Strophe.forEachChild(elem, null, function (child) {
             var i, newList;
-            // process handlers
+            // process handler
             newList = that.handlers;
             that.handlers = [];
             for (i = 0; i < newList.length; i++) {
                 var hand = newList[i];
                 // encapsulate 'handler.run' not to lose the whole handler list if
-                // one of the handlers throws an exception
+                // one of the handler throws an exception
                 try {
                     if (hand.isMatch(child) &&
                         (that.authenticated || !hand.user)) {
@@ -2552,7 +2552,7 @@ Strophe.Connection.prototype = {
      *
      *  This handler is used to process the initial connection request
      *  response from the BOSH server. It is used to set up authentication
-     *  handlers and start the authentication process.
+     *  handler and start the authentication process.
      *
      *  SASL authentication will be attempted if available, otherwise
      *  the code will fall back to legacy authentication.
@@ -2729,7 +2729,7 @@ Strophe.Connection.prototype = {
         var qop = "";
         var matches;
 
-        // remove unneeded handlers
+        // remove unneeded handler
         this.deleteHandler(this._sasl_failure_handler);
 
         while (challenge.match(attribMatch)) {
@@ -2822,7 +2822,7 @@ Strophe.Connection.prototype = {
      */
     _sasl_challenge2_cb: function (elem)
     {
-        // remove unneeded handlers
+        // remove unneeded handler
         this.deleteHandler(this._sasl_success_handler);
         this.deleteHandler(this._sasl_failure_handler);
 
@@ -2888,7 +2888,7 @@ Strophe.Connection.prototype = {
     {
         Strophe.info("SASL authentication succeeded.");
 
-        // remove old handlers
+        // remove old handler
         this.deleteHandler(this._sasl_failure_handler);
         this._sasl_failure_handler = null;
         if (this._sasl_challenge_handler) {
@@ -3003,7 +3003,7 @@ Strophe.Connection.prototype = {
      *  _Private_ handler to finish successful SASL connection.
      *
      *  This sets Connection.authenticated to true on success, which
-     *  starts the processing of user handlers.
+     *  starts the processing of user handler.
      *
      *  Parameters:
      *    (XMLElement) elem - The matching stanza.
@@ -3036,7 +3036,7 @@ Strophe.Connection.prototype = {
      */
     _sasl_failure_cb: function (elem)
     {
-        // delete unneeded handlers
+        // delete unneeded handler
         if (this._sasl_success_handler) {
             this.deleteHandler(this._sasl_success_handler);
             this._sasl_success_handler = null;
@@ -3079,7 +3079,7 @@ Strophe.Connection.prototype = {
      *  _Private_ function to add a system level timed handler.
      *
      *  This function is used to add a Strophe.TimedHandler for the
-     *  library code.  System timed handlers are allowed to run before
+     *  library code.  System timed handler are allowed to run before
      *  authentication is complete.
      *
      *  Parameters:
@@ -3098,7 +3098,7 @@ Strophe.Connection.prototype = {
      *  _Private_ function to add a system level stanza handler.
      *
      *  This function is used to add a Strophe.Handler for the
-     *  library code.  System stanza handlers are allowed to run before
+     *  library code.  System stanza handler are allowed to run before
      *  authentication is complete.
      *
      *  Parameters:
@@ -3149,21 +3149,21 @@ Strophe.Connection.prototype = {
     /** PrivateFunction: _onIdle
      *  _Private_ handler to process events during idle cycle.
      *
-     *  This handler is called every 100ms to fire timed handlers that
+     *  This handler is called every 100ms to fire timed handler that
      *  are ready and keep poll requests going.
      */
     _onIdle: function ()
     {
         var i, thand, since, newList;
 
-        // add timed handlers scheduled for addition
+        // add timed handler scheduled for addition
         // NOTE: we add before remove in the case a timed handler is
         // added and then deleted before the next _onIdle() call.
         while (this.addTimeds.length > 0) {
             this.timedHandlers.push(this.addTimeds.pop());
         }
 
-        // remove timed handlers that have been scheduled for deletion
+        // remove timed handler that have been scheduled for deletion
         while (this.removeTimeds.length > 0) {
             thand = this.removeTimeds.pop();
             i = this.timedHandlers.indexOf(thand);
@@ -3172,7 +3172,7 @@ Strophe.Connection.prototype = {
             }
         }
 
-        // call ready timed handlers
+        // call ready timed handler
         var now = new Date().getTime();
         newList = [];
         for (i = 0; i < this.timedHandlers.length; i++) {

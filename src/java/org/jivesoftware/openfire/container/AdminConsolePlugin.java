@@ -285,7 +285,7 @@ public class AdminConsolePlugin implements Plugin {
      *   context.start();
      * </pre>
      *
-     * @return the Jetty handlers.
+     * @return the Jetty handler.
      */
     public ContextHandlerCollection getContexts() {
         return contexts;

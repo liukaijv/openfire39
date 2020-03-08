@@ -2161,7 +2161,7 @@ $.widget( "ui.autocomplete", {
 					return;
 				}
 
-				// replicate some key handlers to allow them to repeat in Firefox and Opera
+				// replicate some key handler to allow them to repeat in Firefox and Opera
 				var keyCode = $.ui.keyCode;
 				switch( event.keyCode ) {
 				case keyCode.PAGE_UP:
@@ -4528,7 +4528,7 @@ $.extend(Datepicker.prototype, {
 			return startDate;
 	},
 
-	/* Attach the onxxx handlers.  These are declared statically so
+	/* Attach the onxxx handler.  These are declared statically so
 	 * they work with static code transformers like Caja.
 	 */
 	_attachHandlers: function(inst) {
@@ -4940,7 +4940,7 @@ $.extend(Datepicker.prototype, {
 /*
  * Bind hover events for datepicker elements.
  * Done via delegate so the binding only occurs once in the lifetime of the parent div.
- * Global instActive, set by _updateDatepicker allows the handlers to find their way back to the active picker.
+ * Global instActive, set by _updateDatepicker allows the handler to find their way back to the active picker.
  */
 function bindHover(dpDiv) {
 	var selector = "button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a";
@@ -10229,7 +10229,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 			// avoid IE jump (hard set the margin)
 			this.originalElement.css({ margin: this.originalElement.css("margin") });
 
-			// fix handlers offset
+			// fix handler offset
 			this._proportionallyResize();
 
 		}

@@ -39,7 +39,7 @@ import org.xmpp.packet.PacketError;
  * Base class whose main responsibility is to handle IQ packets. Subclasses may
  * only need to specify the IQHandlerInfo (i.e. name and namespace of the packets
  * to handle) and actually handle the IQ packet. Simplifies creation of simple
- * TYPE_IQ message handlers.
+ * TYPE_IQ message handler.
  *
  * @author Gaston Dombiak
  */
@@ -107,7 +107,7 @@ public abstract class IQHandler extends BasicModule implements ChannelHandler {
 
     /**
      * Returns the handler information to help generically handle IQ packets.
-     * IQHandlers that aren't local server iq handlers (e.g. chatbots, transports, etc)
+     * IQHandlers that aren't local server iq handler (e.g. chatbots, transports, etc)
      * return <tt>null</tt>.
      *
      * @return The IQHandlerInfo for this handler

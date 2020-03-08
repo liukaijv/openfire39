@@ -51,7 +51,7 @@ public class KrakenPlugin implements Plugin {
     private TransportSessionRouter sessionRouter;
 
     /**
-     * Represents all configured transport handlers.
+     * Represents all configured transport handler.
      */
     public Hashtable<String,TransportInstance> transports;
 

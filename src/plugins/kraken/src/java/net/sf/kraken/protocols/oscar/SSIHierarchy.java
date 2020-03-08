@@ -507,7 +507,7 @@ public class SSIHierarchy {
         pendingAvatar = null;
     }
     
-    // Below this point: Event handlers used to fill instances of this class,
+    // Below this point: Event handler used to fill instances of this class,
     // based on incoming data from the AIM network.
 
     /**
@@ -570,6 +570,6 @@ public class SSIHierarchy {
         }
     }
     
-    // Up to this point: Event handlers used to fill instances of this class,
+    // Up to this point: Event handler used to fill instances of this class,
     // based on incoming data from the AIM network.
 }

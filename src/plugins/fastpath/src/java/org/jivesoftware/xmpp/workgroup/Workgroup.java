@@ -160,7 +160,7 @@ public class Workgroup {
      */
     private Chatbot chatbot;
     // ------------------------------------------------------------------------
-    // Packet handlers
+    // Packet handler
     // ------------------------------------------------------------------------
     private WorkgroupPresence workgroupPresenceHandler;
     private WorkgroupIQHandler workgroupIqHandler;

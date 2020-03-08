@@ -126,7 +126,7 @@ Candy.Core = (function(self, Strophe, $) {
 		},
 
 		/** PrivateFunction: _registerEventHandlers
-		 * Adds listening handlers to the connection.
+		 * Adds listening handler to the connection.
 		 */
 		_registerEventHandlers = function() {
 			self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');
@@ -467,7 +467,7 @@ Candy.View = (function(self, $) {
 		},
 
 		/** PrivateFunction: _registerWindowHandlers
-		 * Register window focus / blur / resize handlers.
+		 * Register window focus / blur / resize handler.
 		 *
 		 * jQuery.focus()/.blur() <= 1.5.1 do not work for IE < 9. Fortunately onfocusin/onfocusout will work for them.
 		 */
@@ -482,7 +482,7 @@ Candy.View = (function(self, $) {
 		},
 
 		/** PrivateFunction: _registerToolbarHandlers
-		 * Register toolbar handlers and disable sound if cookie says so.
+		 * Register toolbar handler and disable sound if cookie says so.
 		 */
 		_registerToolbarHandlers = function() {
 			$('#emoticons-icon').click(function(e) {
@@ -509,7 +509,7 @@ Candy.View = (function(self, $) {
 		};
 
 	/** Function: init
-	 * Initialize chat view (setup DOM, register handlers & observers)
+	 * Initialize chat view (setup DOM, register handler & observers)
 	 *
 	 * Parameters:
 	 *   (jQuery.element) container - Container element of the whole chat view

@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * <p>Maintains server-wide knowledge of routes to any node.</p>
  * <p>Routes are only concerned with node addresses. Destinations are
- * packet handlers (typically of the three following types):</p>
+ * packet handler (typically of the three following types):</p>
  * <ul>
  * <li>Session - A local or remote session belonging to the server's domain.
  * Remote sessions may be possible in clustered servers.</li>

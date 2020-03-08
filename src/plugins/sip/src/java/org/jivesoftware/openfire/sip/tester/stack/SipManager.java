@@ -48,7 +48,7 @@ import java.util.TooManyListenersException;
  * @author Thiago Rocha Camargo (thiago@jivesoftware.com)
  */
 
-public class SipManager implements SipListener {
+public  class SipManager implements SipListener {
 
     protected static final int RETRY_OBJECT_DELETES = 10;
 
@@ -449,7 +449,12 @@ public class SipManager implements SipListener {
             return;
         }
         try {
-            serverTransaction.sendResponse(notImplemented);
+            try {
+				serverTransaction.sendResponse(notImplemented);
+			} catch (InvalidArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         catch (SipException ex) {
             fireCommunicationsError(new CommunicationsException(
@@ -920,5 +925,23 @@ public class SipManager implements SipListener {
         }
 
     }
+
+	@Override
+	public void processDialogTerminated(DialogTerminatedEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void processIOException(IOExceptionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void processTransactionTerminated(TransactionTerminatedEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -66,7 +66,7 @@ import org.xmpp.packet.Presence;
  * The handler must properly detect the presence type, update the user's roster,
  * and inform presence subscribers of the session's updated presence
  * status. Presence serves many purposes in Jabber so this handler will
- * likely be the most complex of all handlers in the server.
+ * likely be the most complex of all handler in the server.
  * </p>
  * <p>
  * There are four basic types of presence updates:

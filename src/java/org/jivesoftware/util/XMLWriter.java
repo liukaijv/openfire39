@@ -20,7 +20,7 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
 
     protected static final String[] LEXICAL_HANDLER_NAMES = {
         "http://xml.org/sax/properties/lexical-handler",
-        "http://xml.org/sax/handlers/LexicalHandler"
+        "http://xml.org/sax/handler/LexicalHandler"
     };
 
     protected static final OutputFormat DEFAULT_FORMAT = new OutputFormat();

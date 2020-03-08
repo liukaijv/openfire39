@@ -34,7 +34,7 @@ package org.jivesoftware.openfire;
  * <p>We provide this information by having all IQHandlers report
  * their info. Interested parties can watch for IQHandlers in the service
  * lookup and build appropriate data structures on the current state of
- * IQ handlers in the system.</p>
+ * IQ handler in the system.</p>
  *
  * @author Iain Shigeoka
  */

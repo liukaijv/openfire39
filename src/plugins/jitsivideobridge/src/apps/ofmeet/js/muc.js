@@ -16,7 +16,7 @@ Strophe.addConnectionPlugin('emuc', {
         this.myroomjid = jid;
         if (!this.roomjid) {
             this.roomjid = Strophe.getBareJidFromJid(jid);
-            // add handlers (just once)
+            // add handler (just once)
             this.connection.addHandler(this.onPresence.bind(this), null, 'presence', null, null, this.roomjid, {matchBare: true});
             this.connection.addHandler(this.onPresenceUnavailable.bind(this), null, 'presence', 'unavailable', null, this.roomjid, {matchBare: true});
             this.connection.addHandler(this.onPresenceError.bind(this), null, 'presence', 'error', null, this.roomjid, {matchBare: true});

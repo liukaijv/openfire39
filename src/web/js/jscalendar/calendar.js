@@ -80,7 +80,7 @@ Calendar = function (firstDayOfWeek, dateStr, onSelected, onClose) {
 
 // ** constants
 
-/// "static", needed for event handlers.
+/// "static", needed for event handler.
 Calendar._C = null;
 
 /// detect a special case of "web browser"
@@ -326,7 +326,7 @@ Calendar.showYearsCombo = function (fwd) {
 	}
 };
 
-// event handlers
+// event handler
 
 Calendar.tableMouseUp = function(ev) {
 	var cal = Calendar._C;

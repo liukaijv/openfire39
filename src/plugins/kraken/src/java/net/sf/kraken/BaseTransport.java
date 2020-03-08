@@ -61,6 +61,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
+import java.util.Base64;
 
 /**
  * Base class of all transport implementations.
@@ -164,7 +165,7 @@ public abstract class BaseTransport<B extends TransportBuddy> implements Compone
 
     /**
      * Handles all incoming XMPP stanzas, passing them to individual
-     * packet type handlers.
+     * packet type handler.
      *
      * @param packet The packet to be processed.
      */
@@ -2174,7 +2175,8 @@ public abstract class BaseTransport<B extends TransportBuddy> implements Compone
                     if (typeElem != null && binElem != null) {
                         try {
                             MessageDigest md = MessageDigest.getInstance("SHA-1");
-                            byte[] imageData = Base64.decode(binElem.getText());
+                            
+                            byte[] imageData = Base64.getDecoder().decode(binElem.getText());
                             md.update(imageData);
                             String xmppHash = StringUtils.encodeHex(md.digest());
                             try {
@@ -2213,7 +2215,7 @@ public abstract class BaseTransport<B extends TransportBuddy> implements Compone
                     if (typeElem != null && binElem != null) {
                         try {
                             MessageDigest md = MessageDigest.getInstance("SHA-1");
-                            byte[] imageData = Base64.decode(binElem.getText());
+                            byte[] imageData = Base64.getDecoder().decode(binElem.getText());
                             md.update(imageData);
                             String xmppHash = StringUtils.encodeHex(md.digest());
                             try {

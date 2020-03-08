@@ -74,7 +74,7 @@ Candy.Core = (function(self, Strophe, $) {
 		},
 
 		/** PrivateFunction: _registerEventHandlers
-		 * Adds listening handlers to the connection.
+		 * Adds listening handler to the connection.
 		 */
 		_registerEventHandlers = function() {
 			self.addHandler(self.Event.Jabber.Version, Strophe.NS.VERSION, 'iq');

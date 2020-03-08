@@ -17,10 +17,10 @@ var Openfire = {}
  *  Use xmlInput(doc) and RawInput(text) overrideable function to receive XML data coming into the
  *  connection.
  *
- *  The user will also have several event handlers defined by using
+ *  The user will also have several event handler defined by using
  *  addHandler() and addTimedHandler().  These will allow the user code to
  *  respond to interesting stanzas or do something periodically with the
- *  connection.  These handlers will be active once authentication is
+ *  connection.  These handler will be active once authentication is
  *  finished.
  *
  *  Create and initialize a Openfire object.
@@ -489,7 +489,7 @@ Openfire.Connection.prototype = {
      *  this function if you wish to remove a handler with
      *  deleteTimedHandler().
      *
-     *  Note that user handlers are not active until authentication is
+     *  Note that user handler are not active until authentication is
      *  successful.
      *
      *  Parameters:
@@ -522,7 +522,7 @@ Openfire.Connection.prototype = {
     deleteTimedHandler: function (handRef)
     {
         // this must be done in the Idle loop so that we don't change
-        // the handlers during iteration
+        // the handler during iteration
         
         this.removeTimeds.push(handRef);
     },
@@ -587,7 +587,7 @@ Openfire.Connection.prototype = {
     deleteHandler: function (handRef)
     {
         // this must be done in the Idle loop so that we don't change
-        // the handlers during iteration
+        // the handler during iteration
         
         this.removeHandlers.push(handRef);
     },
@@ -718,7 +718,7 @@ Openfire.Connection.prototype = {
         this._changeConnectStatus(Strophe.Status.DISCONNECTED, null);
         this.connected = false;
 
-        // delete handlers
+        // delete handler
         
         this.handlers = [];
         this.timedHandlers = [];
@@ -757,7 +757,7 @@ Openfire.Connection.prototype = {
         this.xmlInput(elem);
         this.rawInput(packet.data);
         
-        // remove handlers scheduled for deletion
+        // remove handler scheduled for deletion
         
         var i, hand;
         
@@ -771,7 +771,7 @@ Openfire.Connection.prototype = {
             }
         }
 
-        // add handlers scheduled for addition
+        // add handler scheduled for addition
         
         while (this.addHandlers.length > 0) 
         {
@@ -830,7 +830,7 @@ Openfire.Connection.prototype = {
     /** PrivateFunction: _onIdle
      *  _Private_ handler to process events during idle cycle.
      *
-     *  This handler is called every 100ms to fire timed handlers that
+     *  This handler is called every 100ms to fire timed handler that
      *  are ready and keep poll requests going.
      */
      
@@ -838,7 +838,7 @@ Openfire.Connection.prototype = {
     {
         var i, thand, since, newList;
 
-        // remove timed handlers that have been scheduled for deletion
+        // remove timed handler that have been scheduled for deletion
         
         while (this.removeTimeds.length > 0) 
         {
@@ -849,14 +849,14 @@ Openfire.Connection.prototype = {
             }
         }
 
-        // add timed handlers scheduled for addition
+        // add timed handler scheduled for addition
         
         while (this.addTimeds.length > 0) 
         {
             this.timedHandlers.push(this.addTimeds.pop());
         }
 
-        // call ready timed handlers
+        // call ready timed handler
         var now = new Date().getTime();
         newList = [];
         

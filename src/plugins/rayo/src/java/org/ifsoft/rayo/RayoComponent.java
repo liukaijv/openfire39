@@ -1165,7 +1165,7 @@ public class RayoComponent 	extends 	AbstractComponent
 				CallParticipant cp = callHandler.getCallParticipant();
 				CallParticipant hp = handsetHandler.getCallParticipant();
 
-				Log.info("RayoComponent handleAnswerCommand found call handlers " + cp.getCallId() + " " + hp.getCallId());
+				Log.info("RayoComponent handleAnswerCommand found call handler " + cp.getCallId() + " " + hp.getCallId());
 
 				try {
 					long start = System.currentTimeMillis();

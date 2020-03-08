@@ -287,7 +287,7 @@ public abstract class BaseMUCTransport<B extends TransportBuddy> implements Comp
 
     /**
      * Handles all incoming XMPP stanzas, passing them to individual
-     * packet type handlers.
+     * packet type handler.
      *
      * @param packet The packet to be processed.
      */

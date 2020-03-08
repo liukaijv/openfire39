@@ -264,7 +264,7 @@ public class ClusterListener implements MemberListener {
                     // Clean up no longer valid sessions
                     cleanupPresences(key);
                 }
-                // Remove traces of directed presences sent from local entities to handlers that no longer exist
+                // Remove traces of directed presences sent from local entities to handler that no longer exist
                 // At this point c2s sessions are gone from the routing table so we can identify expired sessions
                 XMPPServer.getInstance().getPresenceUpdateHandler().removedExpiredPresences();
             }
@@ -288,7 +288,7 @@ public class ClusterListener implements MemberListener {
             if (CacheFactory.isSeniorClusterMember()) {
                 cleanupNode(NodeID.getInstance(nodeID));
             }
-            // Remove traces of directed presences sent from local entities to handlers that no longer exist.
+            // Remove traces of directed presences sent from local entities to handler that no longer exist.
             // At this point c2s sessions are gone from the routing table so we can identify expired sessions
             XMPPServer.getInstance().getPresenceUpdateHandler().removedExpiredPresences();
         }

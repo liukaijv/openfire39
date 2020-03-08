@@ -38,7 +38,7 @@ import net.kano.joscar.snaccmd.DefaultClientFactoryList;
 import org.apache.log4j.Logger;
 
 /**
- * Base class for all FLAP handlers.
+ * Base class for all FLAP handler.
  *
  * @author Daniel Henninger
  * Heavily inspired by joscardemo from the joscar project.

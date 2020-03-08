@@ -33,7 +33,7 @@ import org.jivesoftware.util.JiveGlobals;
 import org.jivesoftware.util.Log;
 
 import com.tangosol.net.CacheFactory;
-
+//import org.jivesoftware.util.cache.CacheFactory;
 /**
  * Clustering Enterprise plugin.
  *
