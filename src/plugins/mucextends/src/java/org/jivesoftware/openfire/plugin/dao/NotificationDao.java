@@ -1,10 +1,13 @@
 package org.jivesoftware.openfire.plugin.dao;
 
 import org.jivesoftware.database.DbConnectionManager;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmpp.packet.JID;
 
+import javax.rmi.CORBA.Util;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,24 +24,29 @@ public class NotificationDao {
             "  `from`    varchar(255) NOT NULL, " +
             "  `to`      varchar(255) NOT NULL, " +
             "  `status`  int(4)       NOT NULL default 0, " +
-            "  `createAt` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-            "  `updateAt` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+//            "  `createAt` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+//            "  `updateAt` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+            "  `createAt` varchar(24)    NOT NULL DEFAULT '0'," +
+            "  `updateAt` varchar(24)   NOT NULL DEFAULT '0'," +
+            "  `confirm` tinyint(1)   NOT NULL DEFAULT '0'," +
             "  `content`  text         null," +
             "  PRIMARY KEY (`id`), " +
             "  INDEX (`username`)" +
             ");";
 
-    private static final String LOAD_NOTIFICATIONS = "SELECT * FROM `ofMucNotification` WHERE `username` = ? ORDER BY `updateAt` DESC LIMIT 30;";
+    private static final String LOAD_NOTIFICATIONS = "SELECT * FROM `ofMucNotification` WHERE `username` = ? AND ( `confirm` = 0 OR `status` = 0 ) ORDER BY `updateAt` DESC LIMIT 30;";
 
     private static final String GET_NOTIFICATION = "SELECT * FROM `ofMucNotification` WHERE `username` = ? AND `roomJID` = ? AND `type` = ?;";
 
-    private static final String GET_NOTIFICATION_BY_ID = "SELECT * FROM `ofMucNotification` WHERE `id` = ? AND `type` = ?;";
+    private static final String GET_NOTIFICATION_BY_ID = "SELECT * FROM `ofMucNotification` WHERE `id` = ?";
 
-    private static final String SAVE_NOTIFICATION = "INSERT INTO ofMucNotification (`roomJID`,`type`,`from`,`to`,`username`,`status`) VALUES (?,?,?,?,?,?);";
+    private static final String SAVE_NOTIFICATION = "INSERT INTO ofMucNotification (`roomJID`,`type`,`from`,`to`,`username`,`status`,`createAt`,`updateAt`) VALUES (?,?,?,?,?,?,?,?);";
 
     private static final String UPDATE_NOTIFICATION_STATUS = "UPDATE ofMucNotification SET `status` = ?, `updateAt` = ? WHERE `id` = ?;";
 
     private static final String DELETE_NOTIFICATION = "DELETE FROM  `ofMucNotification` WHERE `id` = ?;";
+
+    private static final String UPDATE_NOTIFICATION_CONFIRM = "UPDATE ofMucNotification SET `confirm` = ? WHERE `id` = ?;";
 
     public static boolean createTable() {
         Connection conn = null;
@@ -80,7 +88,7 @@ public class NotificationDao {
         return notification;
     }
 
-    public static MucNotification getNotificationById(Long id, int type) {
+    public static MucNotification getNotificationById(Long id) {
         MucNotification notification = null;
         Connection conn = null;
         PreparedStatement statement = null;
@@ -90,7 +98,6 @@ public class NotificationDao {
             statement = conn.prepareStatement(GET_NOTIFICATION_BY_ID);
             LOGGER.info("GET_NOTIFICATION_BY_ID: " + GET_NOTIFICATION_BY_ID);
             statement.setLong(1, id);
-            statement.setInt(2, type);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 notification = mapToMucNotification(resultSet);
@@ -116,6 +123,13 @@ public class NotificationDao {
             statement.setString(4, notification.getTo());
             statement.setString(5, notification.getUsername());
             statement.setInt(6, notification.getStatus());
+            Long now = System.currentTimeMillis();
+            statement.setString(7, String.valueOf(now));
+            if (notification.getUpdateAt() > 0) {
+                statement.setString(8, String.valueOf(notification.getUpdateAt()));
+            } else {
+                statement.setString(8, String.valueOf(now));
+            }
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             while (generatedKeys.next()) {
@@ -179,8 +193,27 @@ public class NotificationDao {
             statement = conn.prepareStatement(UPDATE_NOTIFICATION_STATUS, Statement.RETURN_GENERATED_KEYS);
             LOGGER.info("UPDATE_NOTIFICATION_STATUS: " + UPDATE_NOTIFICATION_STATUS);
             statement.setInt(1, notification.getStatus());
-            statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            statement.setString(2, String.valueOf(System.currentTimeMillis()));
             statement.setLong(3, notification.getId());
+            statement.executeUpdate();
+        } catch (SQLException sqle) {
+            LOGGER.error(sqle.getMessage(), sqle);
+            return false;
+        } finally {
+            DbConnectionManager.closeConnection(statement, conn);
+        }
+        return true;
+    }
+
+    public static boolean updateNotificationConfirm(Long id, boolean confirm) {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+            conn = DbConnectionManager.getConnection();
+            statement = conn.prepareStatement(UPDATE_NOTIFICATION_CONFIRM, Statement.RETURN_GENERATED_KEYS);
+            LOGGER.info("UPDATE_NOTIFICATION_CONFIRM_: " + UPDATE_NOTIFICATION_CONFIRM);
+            statement.setBoolean(1, confirm);
+            statement.setLong(2, id);
             statement.executeUpdate();
         } catch (SQLException sqle) {
             LOGGER.error(sqle.getMessage(), sqle);
@@ -195,13 +228,21 @@ public class NotificationDao {
         MucNotification notification = new MucNotification();
         notification.setId(resultSet.getLong("id"));
         notification.setRoomJID(resultSet.getString("roomJID"));
-        notification.setFrom(resultSet.getString("from"));
+        String fromUser = resultSet.getString("from");
+        notification.setFrom(fromUser);
         notification.setTo(resultSet.getString("to"));
         notification.setStatus(resultSet.getInt("status"));
         notification.setType(resultSet.getInt("type"));
         notification.setUsername(resultSet.getString("username"));
-        notification.setCreateAt(resultSet.getTimestamp("createAt").getTime());
-        notification.setUpdateAt(resultSet.getTimestamp("updateAt").getTime());
+        notification.setCreateAt(Long.valueOf(resultSet.getString("createAt")));
+        notification.setUpdateAt(Long.valueOf(resultSet.getString("updateAt")));
+        int confirm = resultSet.getInt("confirm");
+        notification.setConfirm(confirm == 0 ? false : true);
+        //昵称暂时放这里~~~
+        JID fromJID = new JID(fromUser);
+        notification.setFromNickname(MucUtils.getNickname(fromJID.getNode()));
+//        JID toJID = new JID(resultSet.getString("to"));
+//        notification.setToNickName(MucUtils.getNickname(toJID.getNode()));
         return notification;
     }
 

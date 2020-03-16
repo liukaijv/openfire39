@@ -11,6 +11,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRole;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
+import org.jivesoftware.openfire.plugin.model.MemberInfo;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.openfire.user.User;
 import org.jivesoftware.openfire.user.UserManager;
@@ -24,6 +25,8 @@ import org.xmpp.packet.PacketError;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.jivesoftware.openfire.plugin.MucUtils.getNickname;
 
 public class MUCMemberListHandler extends IQHandler {
 
@@ -132,14 +135,7 @@ public class MUCMemberListHandler extends IQHandler {
             memberInfo.setUserJID(jid.toBareJID());
             memberInfo.setAffiliation(MUCRole.Affiliation.member.getValue());
             memberInfo.setMyAffiliation(room.getAffiliation(myJID).getValue());
-            User user = getUser(jid.getNode());
-            if (user != null) {
-                if (StringUtils.isEmpty(user.getName())) {
-                    memberInfo.setUserNickName(user.getUsername());
-                } else {
-                    memberInfo.setUserNickName(user.getName());
-                }
-            }
+            memberInfo.setUserNickName(getNickname(jid.getNode()));
             members.add(memberInfo);
         }
 
@@ -149,15 +145,7 @@ public class MUCMemberListHandler extends IQHandler {
             memberInfo.setUserJID(jid.toBareJID());
             memberInfo.setAffiliation(MUCRole.Affiliation.admin.getValue());
             memberInfo.setMyAffiliation(room.getAffiliation(myJID).getValue());
-            User user = getUser(jid.getNode());
-            if (user != null) {
-                if (StringUtils.isEmpty(user.getName())) {
-                    memberInfo.setUserNickName(user.getUsername());
-                } else {
-                    memberInfo.setUserNickName(user.getName());
-                }
-            }
-
+            memberInfo.setUserNickName(getNickname(jid.getNode()));
             members.add(memberInfo);
         }
 
@@ -167,14 +155,7 @@ public class MUCMemberListHandler extends IQHandler {
             memberInfo.setUserJID(jid.toBareJID());
             memberInfo.setAffiliation(MUCRole.Affiliation.owner.getValue());
             memberInfo.setMyAffiliation(room.getAffiliation(myJID).getValue());
-            User user = getUser(jid.getNode());
-            if (user != null) {
-                if (StringUtils.isEmpty(user.getName())) {
-                    memberInfo.setUserNickName(user.getUsername());
-                } else {
-                    memberInfo.setUserNickName(user.getName());
-                }
-            }
+            memberInfo.setUserNickName(getNickname(jid.getNode()));
             members.add(memberInfo);
         }
 
@@ -184,14 +165,7 @@ public class MUCMemberListHandler extends IQHandler {
             memberInfo.setUserJID(jid.toBareJID());
             memberInfo.setAffiliation(MUCRole.Affiliation.outcast.getValue());
             memberInfo.setMyAffiliation(room.getAffiliation(myJID).getValue());
-            User user = getUser(jid.getNode());
-            if (user != null) {
-                if (StringUtils.isEmpty(user.getName())) {
-                    memberInfo.setUserNickName(user.getUsername());
-                } else {
-                    memberInfo.setUserNickName(user.getName());
-                }
-            }
+            memberInfo.setUserNickName(getNickname(jid.getNode()));
             members.add(memberInfo);
         }
 
@@ -208,53 +182,5 @@ public class MUCMemberListHandler extends IQHandler {
         return null;
     }
 
-    // 成员信息
-    private static class MemberInfo {
 
-        String userNickName;
-        String userJID;
-        String roomJID;
-        int affiliation;
-        int myAffiliation;
-
-        public String getUserNickName() {
-            return userNickName;
-        }
-
-        public void setUserNickName(String userNickName) {
-            this.userNickName = userNickName;
-        }
-
-        public String getUserJID() {
-            return userJID;
-        }
-
-        public void setUserJID(String userJID) {
-            this.userJID = userJID;
-        }
-
-        public String getRoomJID() {
-            return roomJID;
-        }
-
-        public void setRoomJID(String roomJID) {
-            this.roomJID = roomJID;
-        }
-
-        public int getAffiliation() {
-            return affiliation;
-        }
-
-        public void setAffiliation(int affiliation) {
-            this.affiliation = affiliation;
-        }
-
-        public int getMyAffiliation() {
-            return myAffiliation;
-        }
-
-        public void setMyAffiliation(int myAffiliation) {
-            this.myAffiliation = myAffiliation;
-        }
-    }
 }

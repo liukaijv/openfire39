@@ -2,6 +2,7 @@ package org.jivesoftware.openfire.plugin.dao;
 
 import org.jivesoftware.database.DbConnectionManager;
 import org.jivesoftware.openfire.muc.MUCRoom;
+import org.jivesoftware.openfire.plugin.IdHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
@@ -211,7 +212,7 @@ public class MUCDao {
     private static RoomInfo mapToRoomInfo(ResultSet resultSet) throws SQLException {
         RoomInfo roomInfo = new RoomInfo();
         roomInfo.setServiceID(resultSet.getInt(1));
-        roomInfo.setRoomID(resultSet.getInt(2));
+        roomInfo.setRoomID(resultSet.getLong(2));
         roomInfo.setName(resultSet.getString(3));
         roomInfo.setNaturalName(resultSet.getString(4));
         roomInfo.setDescription(resultSet.getString(5));
@@ -220,6 +221,7 @@ public class MUCDao {
         roomInfo.setUserJid(resultSet.getString(8));
         roomInfo.setNickname(resultSet.getString(9));
         roomInfo.setAffiliation(resultSet.getInt(10));
+        roomInfo.setCardId(IdHash.encode(resultSet.getLong(2)));
         return roomInfo;
     }
 

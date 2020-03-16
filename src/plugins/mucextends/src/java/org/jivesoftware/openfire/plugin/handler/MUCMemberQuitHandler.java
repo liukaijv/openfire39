@@ -9,22 +9,18 @@ import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.util.WebManager;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
-import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketError;
-
-import java.util.Collection;
 
 public class MUCMemberQuitHandler extends IQHandler {
 
@@ -94,19 +90,21 @@ public class MUCMemberQuitHandler extends IQHandler {
                 item.addAttribute("jid", packet.getFrom().toBareJID());
                 room.getIQOwnerHandler().handleIQ(iq, room.getRole());
 
-                JID ownerJID = Utils.getOwner(room);
+                JID ownerJID = MucUtils.getOwner(room);
 
                 MucNotification notification = new MucNotification();
                 notification.setRoomJID(roomJID.toBareJID());
                 notification.setType(NotificationType.QUIT.getValue());
+                notification.setStatus(NotificationStatus.Done.getValue());
                 notification.setFrom(packet.getFrom().toBareJID());
                 notification.setTo(ownerJID.toBareJID());
                 notification.setUsername(ownerJID.getNode());
+                notification.setUpdateAt(System.currentTimeMillis());
 
                 NotificationDao.saveNotification(notification);
 
                 // 发消息给群主
-                Utils.pushNotificationToUser(ownerJID, notification);
+                MucUtils.pushNotificationToUser(ownerJID, notification);
 
                 // 通知在线成员
                 broadcastToMembers(room);

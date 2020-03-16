@@ -4,7 +4,7 @@ public class RoomInfo {
 
     private int serviceID;
 
-    private int roomID;
+    private Long roomID;
 
     private String name;
 
@@ -24,6 +24,8 @@ public class RoomInfo {
 
     private int affiliation;
 
+    private Long cardId;
+
     public int getServiceID() {
         return serviceID;
     }
@@ -32,11 +34,11 @@ public class RoomInfo {
         this.serviceID = serviceID;
     }
 
-    public int getRoomID() {
+    public Long getRoomID() {
         return roomID;
     }
 
-    public void setRoomID(int roomID) {
+    public void setRoomID(Long roomID) {
         this.roomID = roomID;
     }
 
@@ -110,5 +112,13 @@ public class RoomInfo {
 
     public void setAffiliation(int affiliation) {
         this.affiliation = affiliation;
+    }
+
+    public Long getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(Long cardId) {
+        this.cardId = cardId;
     }
 }

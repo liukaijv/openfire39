@@ -83,6 +83,10 @@ public class MUCRoomListHandler extends IQHandler {
                 String roomName = roomInfo.getName();
                 LocalMUCRoom room = (LocalMUCRoom) mucService.getChatRoom(roomName);
 
+                if (room == null) {
+                    continue;
+                }
+
 //            map.put("serviceID", resultSet.getString(1));
 //            map.put("roomID", resultSet.getString(2));
 //            map.put("name", resultSet.getString(3));
@@ -106,6 +110,7 @@ public class MUCRoomListHandler extends IQHandler {
                 itemEle.addAttribute("userJid", roomInfo.getUserJid());
                 itemEle.addAttribute("nickname", roomInfo.getNickname());
                 itemEle.addAttribute("affiliation", String.valueOf(roomInfo.getAffiliation()));
+                itemEle.addAttribute("cardId", String.valueOf(roomInfo.getCardId()));
             }
 
             reply.setChildElement(rootEle);

@@ -16,18 +16,18 @@ import org.slf4j.LoggerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.PacketError;
 
-public class MUCDeleteNotificationsHandler extends IQHandler {
+public class MUCConfirmNotificationsHandler extends IQHandler {
 
     private IQHandlerInfo info;
     private XMPPServer server;
     private NotificationStore notificationStore;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MUCDeleteNotificationsHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MUCConfirmNotificationsHandler.class);
 
-    public MUCDeleteNotificationsHandler() {
-        super("MUCDeleteNotificationsHandler");
+    public MUCConfirmNotificationsHandler() {
+        super("MUCConfirmNotificationsHandler");
 
-        info = new IQHandlerInfo("query", Const.IM_NS_DELETE_NOTIFICATION);
+        info = new IQHandlerInfo("query", Const.IM_NS_CONFIRM_NOTIFICATION);
     }
 
     @Override
@@ -61,6 +61,7 @@ public class MUCDeleteNotificationsHandler extends IQHandler {
             Element packetElement = packet.getElement();
             Element query = packetElement.element("query");
             Element idEle = query.element("id");
+            Element confirmEle = query.element("confirm");
 
             if (idEle == null || StringUtils.isEmpty(idEle.getText())) {
                 LOGGER.error("ID未传：");
@@ -68,8 +69,18 @@ public class MUCDeleteNotificationsHandler extends IQHandler {
                 return reply;
             }
 
-            // 删除信息
-            NotificationDao.deleteNotification(Long.valueOf(idEle.getText()));
+            boolean confirm = false;
+            if (confirmEle != null && confirmEle.getText().equals("1")) {
+                confirm = true;
+            }
+
+            Long id = Long.valueOf(idEle.getText());
+            // 确认已读
+            boolean success = NotificationDao.updateNotificationConfirm(id, confirm);
+            if (success) {
+//                MucNotification notification = NotificationDao.getNotificationById(id);
+//                MucUtils.pushNotificationToUser(packet.getFrom(), notification);
+            }
 
             LOGGER.info("发送packet：" + reply.toXML());
             return reply;

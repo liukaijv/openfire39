@@ -7,7 +7,7 @@ import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
-import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketError;
 
 import java.util.ArrayList;
@@ -154,11 +153,12 @@ public class MUCRoomDestroyHandler extends IQHandler {
                     notification.setTo(jid.toBareJID());
                     notification.setUsername(jid.getNode());
                     notification.setStatus(NotificationStatus.Done.getValue());
+                    notification.setUpdateAt(System.currentTimeMillis());
                     NotificationDao.saveNotification(notification);
 
                     //状态为0让用户处理
                     notification.setStatus(NotificationStatus.DEFAULT.getValue());
-                    Utils.pushNotificationToUser(jid, notification);
+                    MucUtils.pushNotificationToUser(jid, notification);
                 }
             }
         };

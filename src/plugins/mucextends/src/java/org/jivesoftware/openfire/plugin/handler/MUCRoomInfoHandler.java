@@ -11,7 +11,8 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.spi.LocalMUCRoom;
 import org.jivesoftware.openfire.muc.spi.MultiUserChatServiceImpl;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.IdHash;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.MUCDao;
 import org.jivesoftware.openfire.plugin.dao.RoomInfo;
 import org.jivesoftware.openfire.session.ClientSession;
@@ -22,6 +23,8 @@ import org.xmpp.packet.JID;
 import org.xmpp.packet.PacketError;
 
 import java.util.regex.Pattern;
+
+import static org.jivesoftware.openfire.plugin.MucUtils.getNickname;
 
 public class MUCRoomInfoHandler extends IQHandler {
 
@@ -80,7 +83,7 @@ public class MUCRoomInfoHandler extends IQHandler {
                         long id = Long.valueOf(roomNameEle.getText());
                         LOGGER.info("ID为：" + id);
                         if (id > 0) {
-                            roomInfo = MUCDao.getMucById(id);
+                            roomInfo = MUCDao.getMucById(IdHash.decode(id));
                         }
                     }
                 } catch (Exception e) {
@@ -116,12 +119,13 @@ public class MUCRoomInfoHandler extends IQHandler {
             itemEle.addAttribute("userJid", roomInfo.getUserJid());
             itemEle.addAttribute("nickname", roomInfo.getNickname());
 //            itemEle.addAttribute("affiliation", String.valueOf(roomInfo.getAffiliation()));
-            int affiliation = Utils.getUserAffiliation(room, userJid);
+            int affiliation = MucUtils.getUserAffiliation(room, userJid);
             itemEle.addAttribute("affiliation", String.valueOf(affiliation));
             itemEle.addAttribute("usersCount", String.valueOf(usersCount));
+            itemEle.addAttribute("cardId", String.valueOf(roomInfo.getCardId()));
 
-            JID oneOwner = Utils.getOwner(room);
-            itemEle.addAttribute("creator", oneOwner.getNode());
+            JID oneOwner = MucUtils.getOwner(room);
+            itemEle.addAttribute("creator", getNickname(oneOwner.getNode()));
 
             reply.setChildElement(itemEle);
             LOGGER.info("发送packet：" + reply.toXML());

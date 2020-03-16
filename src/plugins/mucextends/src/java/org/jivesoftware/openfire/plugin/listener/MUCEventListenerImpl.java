@@ -1,10 +1,6 @@
 package org.jivesoftware.openfire.plugin.listener;
 
-import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.muc.MUCEventListener;
-import org.jivesoftware.openfire.muc.MUCRoom;
-import org.jivesoftware.openfire.muc.MultiUserChatService;
-import org.jivesoftware.openfire.muc.NotAllowedException;
 import org.jivesoftware.openfire.plugin.dao.MUCDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +23,7 @@ public class MUCEventListenerImpl implements MUCEventListener {
 
     @Override
     public void occupantJoined(JID roomJID, JID userJID, String nickname) {
-        // 只在用户加入群的时候进行操作，将用户id写入对应的数据库
-        XMPPServer server = XMPPServer.getInstance();
-        MultiUserChatService mucservice = server.getMultiUserChatManager().getMultiUserChatService(roomJID);
-        if (mucservice != null) {
-            String roomName = roomJID.getNode();
-            try {
-                MUCRoom room = mucservice.getChatRoom(roomName, userJID);
-                // 当用户加入房间时，将其数据写入数据库.
-                if (room.isPersistent() && !MUCDao.hasJoinedRoom(room, userJID)) {
-                    MUCDao.saveMember(room, userJID, nickname);
-                }
-            } catch (NotAllowedException e) {
-                Log.error(e.getMessage(), e);
-            }
-        }
+        // todo 推送离线记录
     }
 
     @Override

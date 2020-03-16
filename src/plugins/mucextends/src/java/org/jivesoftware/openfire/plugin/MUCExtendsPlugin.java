@@ -7,8 +7,11 @@ import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.event.SessionEventDispatcher;
 import org.jivesoftware.openfire.event.SessionEventListener;
 import org.jivesoftware.openfire.handler.IQHandler;
+import org.jivesoftware.openfire.interceptor.PacketInterceptor;
+import org.jivesoftware.openfire.muc.MUCEventDispatcher;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.handler.*;
+import org.jivesoftware.openfire.plugin.listener.MUCEventListenerImpl;
 import org.jivesoftware.openfire.plugin.listener.SessionEventListenerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,29 +23,73 @@ public class MUCExtendsPlugin implements Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(MUCExtendsPlugin.class);
 
     private SessionEventListener sessionEventListener;
+    private MUCEventListenerImpl mucEventListener;
+
+    IQRouter iqRouter;
+
+    // IQHandlers
+    IQHandler roomListHandler;
+    IQHandler addMemberHandler;
+    IQHandler mucRoomInfoHandler;
+    IQHandler mucDestroyHandler;
+    IQHandler mucMemberQuitHandler;
+    IQHandler mucMemberApplyHandler;
+    IQHandler mucMemberListHandler;
+    IQHandler mucMemberKickHandler;
+    IQHandler mucRoomCreateHandler;
+    IQHandler mucOwnerResolveApplyHandler;
+    IQHandler mucMemberResolveInviteHandler;
+    IQHandler mucDeleteNotificationsHandler;
+    IQHandler mucGetNotificationsHandler;
+    IQHandler mucConfirmNotificationsHandler;
 
     @Override
     public void initializePlugin(PluginManager manager, File pluginDirectory) {
 
-        LOGGER.info("用户房间转群插件运行成功!");
+        LOGGER.info("群组插件运行成功!");
 
         NotificationDao.createTable();
 
-        IQRouter iqRouter = XMPPServer.getInstance().getIQRouter();
+        iqRouter = XMPPServer.getInstance().getIQRouter();
+        LOGGER.info("注册群组IQ");
+        registerIQHandlers();
 
-        IQHandler roomListHandler = new MUCRoomListHandler();
-        IQHandler addMemberHandler = new MUCAddMemberHandler();
-        IQHandler mucRoomInfoHandler = new MUCRoomInfoHandler();
-        IQHandler mucDestroyHandler = new MUCRoomDestroyHandler();
-        IQHandler mucMemberQuitHandler = new MUCMemberQuitHandler();
-        IQHandler mucMemberApplyHandler = new MUCMemberApplyHandler();
-        IQHandler mucMemberListHandler = new MUCMemberListHandler();
-        IQHandler mucMemberKickHandler = new MUCMemberKickHandler();
-        IQHandler mucRoomCreateHandler = new MUCRoomCreateHandler();
-        IQHandler mucOwnerResolveApplyHandler = new MUCOwnerResolveApplyHandler();
-        IQHandler mucMemberResolveInviteHandler = new MUCMemberResolveInviteHandler();
-        IQHandler mucDeleteNotificationsHandler = new MUCDeleteNotificationsHandler();
-        IQHandler mucGetNotificationsHandler = new MUCGetNotificationsHandler();
+        if (sessionEventListener == null) {
+            sessionEventListener = new SessionEventListenerImpl(XMPPServer.getInstance().getMessageRouter());
+        }
+
+        if (mucEventListener == null) {
+            mucEventListener = new MUCEventListenerImpl();
+        }
+
+        MUCEventDispatcher.addListener(mucEventListener);
+        SessionEventDispatcher.addListener(sessionEventListener);
+
+    }
+
+    @Override
+    public void destroyPlugin() {
+        removeIQHandlers();
+        MUCEventDispatcher.removeListener(mucEventListener);
+        SessionEventDispatcher.removeListener(sessionEventListener);
+    }
+
+    private void registerIQHandlers() {
+
+        roomListHandler = new MUCRoomListHandler();
+        addMemberHandler = new MUCAddMemberHandler();
+        mucRoomInfoHandler = new MUCRoomInfoHandler();
+        mucDestroyHandler = new MUCRoomDestroyHandler();
+        mucMemberQuitHandler = new MUCMemberQuitHandler();
+        mucMemberApplyHandler = new MUCMemberApplyHandler();
+        mucMemberListHandler = new MUCMemberListHandler();
+        mucMemberKickHandler = new MUCMemberKickHandler();
+        mucRoomCreateHandler = new MUCRoomCreateHandler();
+        mucOwnerResolveApplyHandler = new MUCOwnerResolveApplyHandler();
+        mucMemberResolveInviteHandler = new MUCMemberResolveInviteHandler();
+        mucDeleteNotificationsHandler = new MUCDeleteNotificationsHandler();
+        mucGetNotificationsHandler = new MUCGetNotificationsHandler();
+        mucConfirmNotificationsHandler = new MUCConfirmNotificationsHandler();
 
         iqRouter.addHandler(roomListHandler);
         iqRouter.addHandler(addMemberHandler);
@@ -57,19 +104,24 @@ public class MUCExtendsPlugin implements Plugin {
         iqRouter.addHandler(mucMemberResolveInviteHandler);
         iqRouter.addHandler(mucDeleteNotificationsHandler);
         iqRouter.addHandler(mucGetNotificationsHandler);
-
-        if (sessionEventListener == null) {
-            sessionEventListener = new SessionEventListenerImpl(XMPPServer.getInstance().getMessageRouter());
-        }
-
-//        MUCEventDispatcher.addListener(new MUCEventListenerImpl());
-        SessionEventDispatcher.addListener(sessionEventListener);
-
+        iqRouter.addHandler(mucConfirmNotificationsHandler);
     }
 
-    @Override
-    public void destroyPlugin() {
-        SessionEventDispatcher.removeListener(sessionEventListener);
+    private void removeIQHandlers() {
+        iqRouter.removeHandler(roomListHandler);
+        iqRouter.removeHandler(addMemberHandler);
+        iqRouter.removeHandler(mucRoomInfoHandler);
+        iqRouter.removeHandler(mucDestroyHandler);
+        iqRouter.removeHandler(mucMemberQuitHandler);
+        iqRouter.removeHandler(mucMemberApplyHandler);
+        iqRouter.removeHandler(mucMemberListHandler);
+        iqRouter.removeHandler(mucMemberKickHandler);
+        iqRouter.removeHandler(mucRoomCreateHandler);
+        iqRouter.removeHandler(mucOwnerResolveApplyHandler);
+        iqRouter.removeHandler(mucMemberResolveInviteHandler);
+        iqRouter.removeHandler(mucDeleteNotificationsHandler);
+        iqRouter.removeHandler(mucGetNotificationsHandler);
+        iqRouter.removeHandler(mucConfirmNotificationsHandler);
     }
 
 }

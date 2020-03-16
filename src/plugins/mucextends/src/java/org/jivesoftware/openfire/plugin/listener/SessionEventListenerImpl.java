@@ -2,7 +2,7 @@ package org.jivesoftware.openfire.plugin.listener;
 
 import org.jivesoftware.openfire.MessageRouter;
 import org.jivesoftware.openfire.event.SessionEventListener;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.session.Session;
@@ -25,11 +25,11 @@ public class SessionEventListenerImpl implements SessionEventListener {
     }
 
     @Override
-    public void sessionCreated(Session session) {
+    public void sessionCreated(final Session session) {
 
         LOGGER.info("用户已连接");
 
-        String username = session.getAddress().getNode();
+        final String username = session.getAddress().getNode();
         final List<MucNotification> notifications = NotificationDao.getNotifications(username);
 
         LOGGER.info("群组申请消息条数：" + notifications.size());
@@ -39,7 +39,7 @@ public class SessionEventListenerImpl implements SessionEventListener {
                 @Override
                 public void run() {
                     for (MucNotification notification : notifications) {
-                        Message message = Utils.notificationToMessage(notification);
+                        Message message = MucUtils.notificationToMessage(session.getAddress(), notification);
                         router.route(message);
                     }
                 }

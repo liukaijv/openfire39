@@ -16,6 +16,7 @@ public class Const {
     public final static String IM_NS_OWNER_RESOLVE_APPLY = "im:iq:owner_resolve_apply";
     public final static String IM_NS_DELETE_NOTIFICATION = "im:iq:delete_notification";
     public final static String IM_NS_GET_NOTIFICATIONS = "im:iq:get_notifications";
+    public final static String IM_NS_CONFIRM_NOTIFICATION = "im:iq:confirm_notification";
 
 
     public final static int MAX_ROOMS_ALLOW = 5;

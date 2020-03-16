@@ -3,12 +3,11 @@ package org.jivesoftware.openfire.plugin.handler;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.openfire.IQHandlerInfo;
-import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
@@ -19,10 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
-import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketError;
-
-import java.util.Collection;
 
 public class MUCAddMemberHandler extends IQHandler {
 
@@ -120,7 +116,7 @@ public class MUCAddMemberHandler extends IQHandler {
                 JID userJID = new JID(userJIDEleText);
 
                 // 已经加入了
-                if (Utils.hasJoinedRoom(room, userJID)) {
+                if (MucUtils.hasJoinedRoom(room, userJID)) {
                     LOGGER.info("用户已经加入了：" + userJID.toBareJID());
                     reply.setError(PacketError.Condition.conflict);
                     return reply;
@@ -144,12 +140,13 @@ public class MUCAddMemberHandler extends IQHandler {
                 notification.setFrom(packet.getFrom().toBareJID());
                 notification.setTo(userJID.toBareJID());
                 notification.setUsername(userJID.getNode());
+                notification.setUpdateAt(System.currentTimeMillis());
 
                 LOGGER.info("数据库插入申请：" + userJID.getNode());
                 MucNotification savedNotification = NotificationDao.saveNotification(notification);
 
                 // 推送给用户
-                Utils.pushNotificationToUser(userJID, savedNotification);
+                MucUtils.pushNotificationToUser(userJID, savedNotification);
 
             }
 

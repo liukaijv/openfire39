@@ -9,19 +9,17 @@ import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
 import org.jivesoftware.openfire.session.ClientSession;
 import org.jivesoftware.util.WebManager;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
-import org.xmpp.packet.Message;
 import org.xmpp.packet.PacketError;
 
 public class MUCMemberKickHandler extends IQHandler {
@@ -103,12 +101,12 @@ public class MUCMemberKickHandler extends IQHandler {
                 notification.setTo(userJID.toBareJID());
                 notification.setUsername(userJID.getNode());
                 notification.setStatus(NotificationStatus.Done.getValue());
+                notification.setUpdateAt(System.currentTimeMillis());
 
                 NotificationDao.saveNotification(notification);
 
-                // 发消息给用户/状态为0让客户端确认
-                notification.setStatus(NotificationStatus.DEFAULT.getValue());
-                Utils.pushNotificationToUser(userJID, notification);
+                // 发消息给用户
+                MucUtils.pushNotificationToUser(userJID, notification);
 
                 // 通知在线成员
                 broadcastToMembers(room);

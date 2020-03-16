@@ -1,5 +1,6 @@
 package org.jivesoftware.openfire.plugin;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jivesoftware.openfire.SessionManager;
 import org.jivesoftware.openfire.XMPPServer;
@@ -7,17 +8,28 @@ import org.jivesoftware.openfire.muc.MUCRole;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.session.Session;
+import org.jivesoftware.openfire.user.User;
+import org.jivesoftware.openfire.user.UserManager;
+import org.jivesoftware.openfire.user.UserNotFoundException;
+import org.jivesoftware.openfire.vcard.VCardManager;
+import org.jivesoftware.util.TaskEngine;
 import org.json.JSONObject;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 
-public class Utils {
+import java.util.TimerTask;
+
+public class MucUtils {
 
     public static Message notificationToMessage(MucNotification notification) {
+        return notificationToMessage(new JID(notification.getTo()), notification);
+    }
+
+    public static Message notificationToMessage(JID to, MucNotification notification) {
         org.xmpp.packet.Message message = new Message();
         message.setFrom(notification.getFrom());
-        message.setTo(notification.getTo());
+        message.setTo(to);
         message.setType(Message.Type.groupchat);
         message.setSubject(Const.MESSAGE_GROUP_NOTIFICATION);
         JSONObject jsonObject = new JSONObject(notification);
@@ -41,21 +53,25 @@ public class Utils {
         return session != null && session.getStatus() == Session.STATUS_AUTHENTICATED;
     }
 
-    public static boolean pushNotificationToUser(JID to, MucNotification notification) {
-        Session session = SessionManager.getInstance().getSession(to);
-        if (Utils.isAuthenticatedSession(session)) {
-            Message message = Utils.notificationToMessage(notification);
-            session.process(message);
-            return true;
-        } else {
-            try {
-                XMPPServer.getInstance().getMessageRouter().route(Utils.notificationToMessage(notification));
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+    public static void pushNotificationToUser(final JID to, final MucNotification notification) {
+        TimerTask messageTask = new TimerTask() {
+            @Override
+            public void run() {
+                Session session = SessionManager.getInstance().getSession(to);
+                if (MucUtils.isAuthenticatedSession(session)) {
+                    Message message = MucUtils.notificationToMessage(notification);
+                    session.process(message);
+                } else {
+                    try {
+                        XMPPServer.getInstance().getMessageRouter().route(MucUtils.notificationToMessage(to, notification));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        };
+
+        TaskEngine.getInstance().schedule(messageTask, 3000);
     }
 
     public static boolean hasJoinedRoom(MUCRoom room, JID userJid) {
@@ -113,6 +129,32 @@ public class Utils {
             }
         }
         return MUCRole.Affiliation.none.getValue();
+    }
+
+    public static String getNickname(String userName) {
+
+        VCardManager vCardManager = VCardManager.getInstance();
+        String nickname = vCardManager.getVCardProperty(userName, "NICKNAME");
+
+        if (StringUtils.isEmpty(nickname)) {
+            try {
+                User user = UserManager.getInstance().getUser(userName);
+                if (user != null) {
+                    if (StringUtils.isEmpty(user.getName())) {
+                        nickname = user.getName();
+                    } else {
+                        nickname = user.getUsername();
+                    }
+                }
+            } catch (UserNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (StringUtils.isEmpty(nickname)) {
+                return userName;
+            }
+        }
+
+        return nickname;
     }
 
 }

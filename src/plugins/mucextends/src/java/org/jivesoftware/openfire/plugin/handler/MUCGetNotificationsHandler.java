@@ -4,7 +4,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.jivesoftware.openfire.IQHandlerInfo;
-import org.jivesoftware.openfire.OfflineMessage;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
@@ -20,7 +19,6 @@ import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.PacketError;
 
-import java.util.Collection;
 import java.util.List;
 
 public class MUCGetNotificationsHandler extends IQHandler {

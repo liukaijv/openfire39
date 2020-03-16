@@ -8,7 +8,7 @@ import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.Utils;
+import org.jivesoftware.openfire.plugin.MucUtils;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
@@ -83,7 +83,7 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
 
             long id = Long.valueOf(idEle.getText());
 
-            MucNotification notification = NotificationDao.getNotificationById(id, NotificationType.INVITE.getValue());
+            MucNotification notification = NotificationDao.getNotificationById(id);
             if (notification == null) {
                 LOGGER.info("申请不存在：" + id);
                 reply.setError(PacketError.Condition.item_not_found);
@@ -109,7 +109,7 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
                 return reply;
             }
 
-            if (Utils.hasJoinedRoom(room, userJID)) {
+            if (MucUtils.hasJoinedRoom(room, userJID)) {
                 LOGGER.error("已经加入：" + userJID.toBareJID());
                 reply.setError(PacketError.Condition.conflict);
                 if (notification.getStatus() != NotificationStatus.AGREE.getValue()) {
@@ -132,24 +132,30 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
             }
             // 同意申请
             if (status == NotificationStatus.AGREE) {
-                Utils.addMemberToRoom(room, userJID);
+                MucUtils.addMemberToRoom(room, userJID);
             }
 
             // 更新状态
-            notification.setStatus(status.getValue());
-            NotificationDao.updateNotificationStatus(notification);
-            Utils.pushNotificationToUser(packet.getFrom(), notification);
+            MucNotification updatedNotification = notification.newBuilder().setStatus(status.getValue()).build();
+            NotificationDao.updateNotificationStatus(updatedNotification);
+            MucUtils.pushNotificationToUser(packet.getFrom(), updatedNotification);
 
             // 储存通知
-            JID owner = Utils.getOwner(room);
-            notification.setFrom(userJID.toBareJID());
-            notification.setTo(owner.toBareJID());
-            notification.setUsername(owner.getNode());
-            notification.setType(NotificationType.INVITE_RESULT.getValue());
-            NotificationDao.saveNotification(notification);
+            JID owner = MucUtils.getOwner(room);
+            MucNotification ownerNotification = notification.newBuilder()
+                    .setFrom(userJID.toBareJID())
+                    .setTo(owner.toBareJID())
+                    .setUsername(owner.getNode())
+                    .setType(NotificationType.INVITE_RESULT.getValue())
+                    .setStatus(status.getValue())
+                    .setUpdateAt(System.currentTimeMillis())
+                    .setConfirm(false)
+                    .build();
+
+            ownerNotification = NotificationDao.saveNotification(ownerNotification);
 
             // 推送结果给群主
-            Utils.pushNotificationToUser(owner, notification);
+            MucUtils.pushNotificationToUser(owner, ownerNotification);
 
             LOGGER.info("发送packet：" + reply.toXML());
             return reply;
