@@ -7,7 +7,6 @@ import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.event.SessionEventDispatcher;
 import org.jivesoftware.openfire.event.SessionEventListener;
 import org.jivesoftware.openfire.handler.IQHandler;
-import org.jivesoftware.openfire.interceptor.PacketInterceptor;
 import org.jivesoftware.openfire.muc.MUCEventDispatcher;
 import org.jivesoftware.openfire.plugin.dao.NotificationDao;
 import org.jivesoftware.openfire.plugin.handler.*;

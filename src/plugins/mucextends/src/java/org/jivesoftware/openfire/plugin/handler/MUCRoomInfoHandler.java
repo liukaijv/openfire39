@@ -126,6 +126,7 @@ public class MUCRoomInfoHandler extends IQHandler {
 
             JID oneOwner = MucUtils.getOwner(room);
             itemEle.addAttribute("creator", getNickname(oneOwner.getNode()));
+            itemEle.addAttribute("creatorJID", oneOwner.toBareJID());
 
             reply.setChildElement(itemEle);
             LOGGER.info("发送packet：" + reply.toXML());

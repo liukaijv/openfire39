@@ -4,7 +4,7 @@
     <class>org.jivesoftware.openfire.plugin.MUCExtendsPlugin</class>
     <!-- Plugin meta-data -->
     <name>MucExtendsPlugin</name>
-    <description>房间扩展插件，群组功能</description>
+    <description>MucExtends</description>
     <author>noop</author>
 
     <version>1.0.0</version>
