@@ -8,7 +8,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -154,7 +154,7 @@ public class MUCRoomDestroyHandler extends IQHandler {
                     notification.setUsername(jid.getNode());
                     notification.setStatus(NotificationStatus.Done.getValue());
                     notification.setUpdateAt(System.currentTimeMillis());
-                    NotificationDao.saveNotification(notification);
+                    MUCNotificationDao.saveNotification(notification);
 
                     //状态为0让用户处理
                     notification.setStatus(NotificationStatus.DEFAULT.getValue());

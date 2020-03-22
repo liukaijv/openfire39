@@ -8,7 +8,7 @@ import org.jivesoftware.openfire.event.SessionEventDispatcher;
 import org.jivesoftware.openfire.event.SessionEventListener;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCEventDispatcher;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.handler.*;
 import org.jivesoftware.openfire.plugin.listener.MUCEventListenerImpl;
 import org.jivesoftware.openfire.plugin.listener.SessionEventListenerImpl;
@@ -47,7 +47,7 @@ public class MUCExtendsPlugin implements Plugin {
 
         LOGGER.info("群组插件运行成功!");
 
-        NotificationDao.createTable();
+        MUCNotificationDao.createTable();
 
         iqRouter = XMPPServer.getInstance().getIQRouter();
         LOGGER.info("注册群组IQ");

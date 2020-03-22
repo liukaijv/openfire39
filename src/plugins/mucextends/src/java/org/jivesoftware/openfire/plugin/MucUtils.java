@@ -54,6 +54,10 @@ public class MucUtils {
     }
 
     public static void pushNotificationToUser(final JID to, final MucNotification notification) {
+        pushNotificationToUser(to, notification, 3000);
+    }
+
+    public static void pushNotificationToUser(final JID to, final MucNotification notification, int delay) {
         TimerTask messageTask = new TimerTask() {
             @Override
             public void run() {
@@ -71,7 +75,7 @@ public class MucUtils {
             }
         };
 
-        TaskEngine.getInstance().schedule(messageTask, 3000);
+        TaskEngine.getInstance().schedule(messageTask, delay);
     }
 
     public static boolean hasJoinedRoom(MUCRoom room, JID userJid) {

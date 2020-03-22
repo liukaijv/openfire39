@@ -119,7 +119,7 @@ public class MUCDao {
             statement = connection.prepareStatement(GET_USER_MUCS);
             statement.setString(1, userJid);
             statement.setString(2, userJid);
-            LOGGER.info("exec sql GET_MEMBER_MUCS: " + GET_USER_MUCS + " userJid:" + userJid);
+            LOGGER.info("exec sql GET_USER_MUCS: " + GET_USER_MUCS + " userJid:" + userJid);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 list.add(mapToRoomInfo(resultSet));

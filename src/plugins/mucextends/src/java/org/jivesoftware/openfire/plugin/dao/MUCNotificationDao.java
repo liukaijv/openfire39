@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
 
-import javax.rmi.CORBA.Util;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationDao {
+public class MUCNotificationDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MUCNotificationDao.class);
 
     private static final String CREATE_NOTIFICATION_TABLE = "CREATE TABLE IF NOT EXISTS `ofMucNotification` ( " +
             "  `id`      int(4)       NOT NULL auto_increment, " +

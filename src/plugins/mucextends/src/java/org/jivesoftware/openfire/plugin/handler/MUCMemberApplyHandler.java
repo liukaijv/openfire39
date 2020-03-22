@@ -7,7 +7,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -105,7 +105,7 @@ public class MUCMemberApplyHandler extends IQHandler {
                 JID ownerJID = MucUtils.getOwner(room);
                 LOGGER.info("房间拥有人：" + ownerJID.toBareJID());
 
-                MucNotification notification = NotificationDao.getNotification(ownerJID.getNode(), roomJID.toBareJID(), NotificationType.APPLY.getValue());
+                MucNotification notification = MUCNotificationDao.getNotification(ownerJID.getNode(), roomJID.toBareJID(), NotificationType.APPLY.getValue());
                 if (notification != null) {
                     if (notification.getStatus() == NotificationStatus.DEFAULT.getValue()) {
                         LOGGER.info("有加入申请未处理");
@@ -113,7 +113,7 @@ public class MUCMemberApplyHandler extends IQHandler {
                         return reply;
                     } else {
                         LOGGER.info("删除旧记录：" + notification.getId());
-//                        NotificationDao.deleteNotification(notification.getId());
+//                        MUCNotificationDao.deleteNotification(notification.getId());
                     }
                 }
 
@@ -125,7 +125,7 @@ public class MUCMemberApplyHandler extends IQHandler {
                 notification.setUsername(ownerJID.getNode());
                 notification.setUpdateAt(System.currentTimeMillis());
 
-                MucNotification savedNotification = NotificationDao.saveNotification(notification);
+                MucNotification savedNotification = MUCNotificationDao.saveNotification(notification);
 
                 LOGGER.info("推送申请给群主：" + ownerJID.toBareJID());
                 MucUtils.pushNotificationToUser(ownerJID, savedNotification);

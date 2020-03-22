@@ -7,7 +7,7 @@ import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.service.NotificationStore;
 import org.jivesoftware.openfire.plugin.service.NotificationStoreOfflineMessageImpl;
 import org.jivesoftware.openfire.session.ClientSession;
@@ -76,9 +76,9 @@ public class MUCConfirmNotificationsHandler extends IQHandler {
 
             Long id = Long.valueOf(idEle.getText());
             // 确认已读
-            boolean success = NotificationDao.updateNotificationConfirm(id, confirm);
+            boolean success = MUCNotificationDao.updateNotificationConfirm(id, confirm);
             if (success) {
-//                MucNotification notification = NotificationDao.getNotificationById(id);
+//                MucNotification notification = MUCNotificationDao.getNotificationById(id);
 //                MucUtils.pushNotificationToUser(packet.getFrom(), notification);
             }
 

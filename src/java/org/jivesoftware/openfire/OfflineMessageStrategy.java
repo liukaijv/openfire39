@@ -2,15 +2,15 @@
  * $RCSfile: OfflineMessageStrategy.java,v $
  * $Revision: 3114 $
  * $Date: 2005-11-23 18:12:54 -0300 (Wed, 23 Nov 2005) $
- *
+ * <p>
  * Copyright (C) 2005-2008 Jive Software. All rights reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,9 +41,9 @@ import org.xmpp.packet.PacketError;
  */
 public class OfflineMessageStrategy extends BasicModule {
 
-	private static final Logger Log = LoggerFactory.getLogger(OfflineMessageStrategy.class);
+    private static final Logger Log = LoggerFactory.getLogger(OfflineMessageStrategy.class);
 
-    private static int quota = 100*1024; // Default to 100 K.
+    private static int quota = 100 * 1024; // Default to 100 K.
     private static Type type = Type.store_and_bounce;
 
     private static List<OfflineMessageListener> listeners = new CopyOnWriteArrayList<OfflineMessageListener>();
@@ -87,9 +87,14 @@ public class OfflineMessageStrategy extends BasicModule {
                 return;
             }
             // Do not store messages of type groupchat, error or headline as specified in JEP-160
-            if (Message.Type.groupchat == message.getType() ||
+//            if (Message.Type.groupchat == message.getType() ||
+//                    Message.Type.error == message.getType() ||
+//                    Message.Type.headline == message.getType()) {
+//                return;
+//            }
+            if (
                     Message.Type.error == message.getType() ||
-                    Message.Type.headline == message.getType()) {
+                            Message.Type.headline == message.getType()) {
                 return;
             }
             // Do not store messages if communication is blocked
@@ -105,19 +110,15 @@ public class OfflineMessageStrategy extends BasicModule {
 
             if (type == Type.bounce) {
                 bounce(message);
-            }
-            else if (type == Type.store) {
+            } else if (type == Type.store) {
                 store(message);
-            }
-            else if (type == Type.store_and_bounce) {
+            } else if (type == Type.store_and_bounce) {
                 if (underQuota(message)) {
                     store(message);
-                }
-                else {
+                } else {
                     bounce(message);
                 }
-            }
-            else if (type == Type.store_and_drop) {
+            } else if (type == Type.store_and_drop) {
                 if (underQuota(message)) {
                     store(message);
                 }
@@ -180,14 +181,13 @@ public class OfflineMessageStrategy extends BasicModule {
                     listener.messageBounced(message);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error(e.getMessage(), e);
         }
     }
 
     @Override
-	public void initialize(XMPPServer server) {
+    public void initialize(XMPPServer server) {
         super.initialize(server);
         messageStore = server.getOfflineMessageStore();
         router = server.getPacketRouter();

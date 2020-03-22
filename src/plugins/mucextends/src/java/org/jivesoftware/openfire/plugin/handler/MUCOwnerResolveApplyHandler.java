@@ -9,7 +9,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -85,7 +85,7 @@ public class MUCOwnerResolveApplyHandler extends IQHandler {
 
             Long id = Long.valueOf(idEle.getText());
 
-            MucNotification notification = NotificationDao.getNotificationById(id);
+            MucNotification notification = MUCNotificationDao.getNotificationById(id);
             if (notification == null) {
                 LOGGER.info("申请不存在：" + id);
                 reply.setError(PacketError.Condition.item_not_found);
@@ -121,7 +121,7 @@ public class MUCOwnerResolveApplyHandler extends IQHandler {
             if (MucUtils.hasJoinedRoom(room, userJID)) {
                 if (notification.getStatus() != NotificationStatus.AGREE.getValue()) {
                     notification.setStatus(NotificationStatus.AGREE.getValue());
-                    NotificationDao.updateNotificationStatus(notification);
+                    MUCNotificationDao.updateNotificationStatus(notification);
                 }
                 LOGGER.error("已经加入：" + userJID.toBareJID());
                 reply.setError(PacketError.Condition.conflict);
@@ -146,8 +146,8 @@ public class MUCOwnerResolveApplyHandler extends IQHandler {
 
             // 更新状态
             MucNotification updatedNotification = notification.newBuilder().setStatus(status.getValue()).build();
-            NotificationDao.updateNotificationStatus(updatedNotification);
-            MucUtils.pushNotificationToUser(fromJID, updatedNotification);
+            MUCNotificationDao.updateNotificationStatus(updatedNotification);
+            MucUtils.pushNotificationToUser(fromJID, updatedNotification, 500);
 
             // 储存通知
             MucNotification userNotification = updatedNotification.newBuilder()
@@ -159,7 +159,7 @@ public class MUCOwnerResolveApplyHandler extends IQHandler {
                     .setStatus(status.getValue())
                     .setConfirm(false)
                     .build();
-            userNotification = NotificationDao.saveNotification(userNotification);
+            userNotification = MUCNotificationDao.saveNotification(userNotification);
 
             // 通知用户
             MucUtils.pushNotificationToUser(userJID, userNotification);

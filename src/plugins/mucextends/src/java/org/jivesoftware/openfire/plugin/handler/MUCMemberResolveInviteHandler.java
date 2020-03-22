@@ -9,7 +9,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -83,7 +83,7 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
 
             long id = Long.valueOf(idEle.getText());
 
-            MucNotification notification = NotificationDao.getNotificationById(id);
+            MucNotification notification = MUCNotificationDao.getNotificationById(id);
             if (notification == null) {
                 LOGGER.info("申请不存在：" + id);
                 reply.setError(PacketError.Condition.item_not_found);
@@ -114,7 +114,7 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
                 reply.setError(PacketError.Condition.conflict);
                 if (notification.getStatus() != NotificationStatus.AGREE.getValue()) {
                     notification.setStatus(NotificationStatus.AGREE.getValue());
-                    NotificationDao.updateNotificationStatus(notification);
+                    MUCNotificationDao.updateNotificationStatus(notification);
                 }
                 return reply;
             }
@@ -137,8 +137,8 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
 
             // 更新状态
             MucNotification updatedNotification = notification.newBuilder().setStatus(status.getValue()).build();
-            NotificationDao.updateNotificationStatus(updatedNotification);
-            MucUtils.pushNotificationToUser(packet.getFrom(), updatedNotification);
+            MUCNotificationDao.updateNotificationStatus(updatedNotification);
+            MucUtils.pushNotificationToUser(packet.getFrom(), updatedNotification, 500);
 
             // 储存通知
             JID owner = MucUtils.getOwner(room);
@@ -152,7 +152,7 @@ public class MUCMemberResolveInviteHandler extends IQHandler {
                     .setConfirm(false)
                     .build();
 
-            ownerNotification = NotificationDao.saveNotification(ownerNotification);
+            ownerNotification = MUCNotificationDao.saveNotification(ownerNotification);
 
             // 推送结果给群主
             MucUtils.pushNotificationToUser(owner, ownerNotification);

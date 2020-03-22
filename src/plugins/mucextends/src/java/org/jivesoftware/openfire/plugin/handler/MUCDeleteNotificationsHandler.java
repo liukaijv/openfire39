@@ -7,7 +7,7 @@ import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
 import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.plugin.Const;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.service.NotificationStore;
 import org.jivesoftware.openfire.plugin.service.NotificationStoreOfflineMessageImpl;
 import org.jivesoftware.openfire.session.ClientSession;
@@ -69,7 +69,7 @@ public class MUCDeleteNotificationsHandler extends IQHandler {
             }
 
             // 删除信息
-            NotificationDao.deleteNotification(Long.valueOf(idEle.getText()));
+            MUCNotificationDao.deleteNotification(Long.valueOf(idEle.getText()));
 
             LOGGER.info("发送packet：" + reply.toXML());
             return reply;

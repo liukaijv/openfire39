@@ -8,7 +8,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -122,7 +122,7 @@ public class MUCAddMemberHandler extends IQHandler {
                     return reply;
                 }
 
-                MucNotification notification = NotificationDao.getNotification(userJID.getNode(), roomJID.toBareJID(), NotificationType.INVITE.getValue());
+                MucNotification notification = MUCNotificationDao.getNotification(userJID.getNode(), roomJID.toBareJID(), NotificationType.INVITE.getValue());
                 if (notification != null) {
                     if (notification.getStatus() == NotificationStatus.DEFAULT.getValue()) {
                         LOGGER.info("用户有申请未处理：" + userJID.toBareJID());
@@ -130,7 +130,7 @@ public class MUCAddMemberHandler extends IQHandler {
                         return reply;
                     } else {
                         LOGGER.info("删除旧记录：" + notification.getId());
-//                        NotificationDao.deleteNotification(notification.getId());
+//                        MUCNotificationDao.deleteNotification(notification.getId());
                     }
                 }
 
@@ -143,7 +143,7 @@ public class MUCAddMemberHandler extends IQHandler {
                 notification.setUpdateAt(System.currentTimeMillis());
 
                 LOGGER.info("数据库插入申请：" + userJID.getNode());
-                MucNotification savedNotification = NotificationDao.saveNotification(notification);
+                MucNotification savedNotification = MUCNotificationDao.saveNotification(notification);
 
                 // 推送给用户
                 MucUtils.pushNotificationToUser(userJID, savedNotification);

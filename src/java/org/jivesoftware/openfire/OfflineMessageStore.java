@@ -2,15 +2,15 @@
  * $RCSfile$
  * $Revision: 2911 $
  * $Date: 2005-10-03 12:35:52 -0300 (Mon, 03 Oct 2005) $
- *
+ * <p>
  * Copyright (C) 2004-2008 Jive Software. All rights reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,26 +63,26 @@ import java.util.regex.Pattern;
  */
 public class OfflineMessageStore extends BasicModule implements UserEventListener {
 
-	private static final Logger Log = LoggerFactory.getLogger(OfflineMessageStore.class);
+    private static final Logger Log = LoggerFactory.getLogger(OfflineMessageStore.class);
 
     private static final String INSERT_OFFLINE =
-        "INSERT INTO ofOffline (username, messageID, creationDate, messageSize, stanza) " +
-        "VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO ofOffline (username, messageID, creationDate, messageSize, stanza) " +
+                    "VALUES (?, ?, ?, ?, ?)";
     private static final String LOAD_OFFLINE =
-        "SELECT stanza, creationDate FROM ofOffline WHERE username=?";
+            "SELECT stanza, creationDate FROM ofOffline WHERE username=?";
     private static final String LOAD_OFFLINE_MESSAGE =
-        "SELECT stanza FROM ofOffline WHERE username=? AND creationDate=?";
+            "SELECT stanza FROM ofOffline WHERE username=? AND creationDate=?";
     private static final String SELECT_SIZE_OFFLINE =
-        "SELECT SUM(messageSize) FROM ofOffline WHERE username=?";
+            "SELECT SUM(messageSize) FROM ofOffline WHERE username=?";
     private static final String SELECT_SIZE_ALL_OFFLINE =
-        "SELECT SUM(messageSize) FROM ofOffline";
+            "SELECT SUM(messageSize) FROM ofOffline";
     private static final String DELETE_OFFLINE =
-        "DELETE FROM ofOffline WHERE username=?";
+            "DELETE FROM ofOffline WHERE username=?";
     private static final String DELETE_OFFLINE_MESSAGE =
-        "DELETE FROM ofOffline WHERE username=? AND creationDate=?";
+            "DELETE FROM ofOffline WHERE username=? AND creationDate=?";
 
     private static final int POOL_SIZE = 10;
-    
+
     private Cache<String, Integer> sizeCache;
 
     /**
@@ -123,7 +123,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
         if (message == null) {
             return;
         }
-        if(!shouldStoreMessage(message)) {
+        if (!shouldStoreMessage(message)) {
             return;
         }
         JID recipient = message.getTo();
@@ -131,9 +131,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
         // If the username is null (such as when an anonymous user), don't store.
         if (username == null || !UserManager.getInstance().isRegisteredUser(recipient)) {
             return;
-        }
-        else
-        if (!XMPPServer.getInstance().getServerInfo().getXMPPDomain().equals(recipient.getDomain())) {
+        } else if (!XMPPServer.getInstance().getServerInfo().getXMPPDomain().equals(recipient.getDomain())) {
             // Do not store messages sent to users of remote servers
             return;
         }
@@ -154,12 +152,9 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
             pstmt.setInt(4, msgXML.length());
             pstmt.setString(5, msgXML);
             pstmt.executeUpdate();
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error(LocaleUtils.getLocalizedString("admin.error"), e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(pstmt, con);
         }
 
@@ -177,7 +172,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
      * the delete param.
      *
      * @param username the username of the user who's messages you'd like to receive.
-     * @param delete true if the offline messages should be deleted.
+     * @param delete   true if the offline messages should be deleted.
      * @return An iterator of packets containing all offline messages.
      */
     public Collection<OfflineMessage> getMessages(String username, boolean delete) {
@@ -229,19 +224,15 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
                     pstmt2.setString(1, username);
                     pstmt2.executeUpdate();
                     removeUsernameFromSizeCache(username);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Log.error("Error deleting offline messages of username: " + username, e);
-                }
-                finally {
+                } finally {
                     DbConnectionManager.closeStatement(pstmt2);
-                } 
+                }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("Error retrieving offline messages of username: " + username, e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(rs, pstmt, con);
             // Return the sax reader to the pool
             if (xmlReader != null) {
@@ -255,7 +246,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
      * Returns the offline message of the specified user with the given creation date. The
      * returned message will NOT be deleted from the database.
      *
-     * @param username the username of the user who's message you'd like to receive.
+     * @param username     the username of the user who's message you'd like to receive.
      * @param creationDate the date when the offline message was stored in the database.
      * @return the offline message of the specified user with the given creation stamp.
      */
@@ -286,12 +277,10 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
                 delay.addAttribute("from", XMPPServer.getInstance().getServerInfo().getXMPPDomain());
                 delay.addAttribute("stamp", XMPPDateTimeFormat.formatOld(creationDate));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("Error retrieving offline messages of username: " + username +
                     " creationDate: " + creationDate, e);
-        }
-        finally {
+        } finally {
             // Return the sax reader to the pool
             if (xmlReader != null) {
                 xmlReaders.add(xmlReader);
@@ -314,13 +303,11 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
             pstmt = con.prepareStatement(DELETE_OFFLINE);
             pstmt.setString(1, username);
             pstmt.executeUpdate();
-            
+
             removeUsernameFromSizeCache(username);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("Error deleting offline messages of username: " + username, e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(pstmt, con);
         }
     }
@@ -336,7 +323,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
      * Deletes the specified offline message in the store for a user. The way to identify the
      * message to delete is based on the creationDate and username.
      *
-     * @param username the username of the user who's message is going to be deleted.
+     * @param username     the username of the user who's message is going to be deleted.
      * @param creationDate the date when the offline message was stored in the database.
      */
     public void deleteMessage(String username, Date creationDate) {
@@ -348,17 +335,15 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
             pstmt.setString(1, username);
             pstmt.setString(2, StringUtils.dateToMillis(creationDate));
             pstmt.executeUpdate();
-            
+
             // Force a refresh for next call to getSize(username),
             // it's easier than loading the message to be deleted just
             // to update the cache.
             removeUsernameFromSizeCache(username);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("Error deleting offline messages of username: " + username +
                     " creationDate: " + creationDate, e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(pstmt, con);
         }
     }
@@ -389,11 +374,9 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
             }
             // Add the value to cache.
             sizeCache.put(username, size);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error(LocaleUtils.getLocalizedString("admin.error"), e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(rs, pstmt, con);
         }
         return size;
@@ -417,11 +400,9 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
             if (rs.next()) {
                 size = rs.getInt(1);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error(LocaleUtils.getLocalizedString("admin.error"), e);
-        }
-        finally {
+        } finally {
             DbConnectionManager.closeConnection(rs, pstmt, con);
         }
         return size;
@@ -441,10 +422,10 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
     }
 
     @Override
-	public void start() throws IllegalStateException {
+    public void start() throws IllegalStateException {
         super.start();
         // Initialize the pool of sax readers
-        for (int i=0; i<POOL_SIZE; i++) {
+        for (int i = 0; i < POOL_SIZE; i++) {
             SAXReader xmlReader = new SAXReader();
             xmlReader.setEncoding("UTF-8");
             xmlReaders.add(xmlReader);
@@ -455,7 +436,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
     }
 
     @Override
-	public void stop() {
+    public void stop() {
         super.stop();
         // Clean up the pool of sax readers
         xmlReaders.clear();
@@ -491,7 +472,7 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
 
                         if (!el.getNamespaceURI().equals("http://jabber.org/protocol/chatstates")
                                 && !(el.getQName().equals(QName.get("rtt", "urn:xmpp:rtt:0")))
-                                ) {
+                        ) {
                             return true;
                         }
                     }
@@ -499,7 +480,17 @@ public class OfflineMessageStore extends BasicModule implements UserEventListene
 
                 return false;
 
+//            case groupchat:
+//            case headline:
+//                // XEP-0160: "groupchat" message types SHOULD NOT be stored offline
+//                // XEP-0160: "headline" message types SHOULD NOT be stored offline
+//                return false;
+
             case groupchat:
+                if ("MESSAGE_GROUP_NOTIFICATION".equals(message.getSubject())) {
+                    return false;
+                }
+                return true;
             case headline:
                 // XEP-0160: "groupchat" message types SHOULD NOT be stored offline
                 // XEP-0160: "headline" message types SHOULD NOT be stored offline

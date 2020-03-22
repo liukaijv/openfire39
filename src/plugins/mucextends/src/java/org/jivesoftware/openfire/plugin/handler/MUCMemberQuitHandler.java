@@ -10,7 +10,7 @@ import org.jivesoftware.openfire.handler.IQHandler;
 import org.jivesoftware.openfire.muc.MUCRoom;
 import org.jivesoftware.openfire.plugin.Const;
 import org.jivesoftware.openfire.plugin.MucUtils;
-import org.jivesoftware.openfire.plugin.dao.NotificationDao;
+import org.jivesoftware.openfire.plugin.dao.MUCNotificationDao;
 import org.jivesoftware.openfire.plugin.model.MucNotification;
 import org.jivesoftware.openfire.plugin.model.NotificationStatus;
 import org.jivesoftware.openfire.plugin.model.NotificationType;
@@ -72,12 +72,14 @@ public class MUCMemberQuitHandler extends IQHandler {
                     return reply;
                 }
 
+                JID userJID = packet.getFrom();
+
                 WebManager webManager = new WebManager();
                 JID roomJID = new JID(roomJIDEle.getText());
                 String roomName = roomJID.getNode();
                 MUCRoom room = webManager.getMultiUserChatManager().getMultiUserChatService(roomJID).getChatRoom(roomName);
 
-                if (!hasPermit(packet.getFrom(), room)) {
+                if (!hasPermit(userJID, room)) {
                     reply.setError(PacketError.Condition.forbidden);
                     return reply;
                 }
@@ -96,15 +98,20 @@ public class MUCMemberQuitHandler extends IQHandler {
                 notification.setRoomJID(roomJID.toBareJID());
                 notification.setType(NotificationType.QUIT.getValue());
                 notification.setStatus(NotificationStatus.Done.getValue());
-                notification.setFrom(packet.getFrom().toBareJID());
+                notification.setFrom(userJID.toBareJID());
                 notification.setTo(ownerJID.toBareJID());
                 notification.setUsername(ownerJID.getNode());
                 notification.setUpdateAt(System.currentTimeMillis());
 
-                NotificationDao.saveNotification(notification);
+                MUCNotificationDao.saveNotification(notification);
 
                 // 发消息给群主
                 MucUtils.pushNotificationToUser(ownerJID, notification);
+
+                // 离开房间
+                if (room.hasOccupant(userJID.getNode())) {
+                    room.leaveRoom(room.getOccupantByFullJID(userJID));
+                }
 
                 // 通知在线成员
                 broadcastToMembers(room);
