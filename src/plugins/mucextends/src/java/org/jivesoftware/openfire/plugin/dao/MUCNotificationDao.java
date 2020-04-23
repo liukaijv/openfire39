@@ -37,6 +37,8 @@ public class MUCNotificationDao {
 
     private static final String GET_NOTIFICATION = "SELECT * FROM `ofMucNotification` WHERE `username` = ? AND `roomJID` = ? AND `type` = ?;";
 
+    private static final String GET_NOTIFICATION_BY_FROM = "SELECT * FROM `ofMucNotification` WHERE `from` = ? AND `roomJID` = ? AND `type` = ?;";
+
     private static final String GET_NOTIFICATION_BY_ID = "SELECT * FROM `ofMucNotification` WHERE `id` = ?";
 
     private static final String SAVE_NOTIFICATION = "INSERT INTO ofMucNotification (`roomJID`,`type`,`from`,`to`,`username`,`status`,`createAt`,`updateAt`) VALUES (?,?,?,?,?,?,?,?);";
@@ -97,6 +99,30 @@ public class MUCNotificationDao {
             statement = conn.prepareStatement(GET_NOTIFICATION_BY_ID);
             LOGGER.info("GET_NOTIFICATION_BY_ID: " + GET_NOTIFICATION_BY_ID);
             statement.setLong(1, id);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                notification = mapToMucNotification(resultSet);
+            }
+        } catch (SQLException sqle) {
+            LOGGER.error(sqle.getMessage(), sqle);
+        } finally {
+            DbConnectionManager.closeConnection(statement, conn);
+        }
+        return notification;
+    }
+
+    public static MucNotification getNotificationByFrom(String fromJID, String roomJID, int type) {
+        MucNotification notification = null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            conn = DbConnectionManager.getConnection();
+            statement = conn.prepareStatement(GET_NOTIFICATION_BY_FROM);
+            LOGGER.info("GET_NOTIFICATION_BY_FROM: " + GET_NOTIFICATION_BY_FROM);
+            statement.setString(1, fromJID);
+            statement.setString(2, roomJID);
+            statement.setInt(3, type);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 notification = mapToMucNotification(resultSet);

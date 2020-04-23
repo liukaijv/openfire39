@@ -105,7 +105,8 @@ public class MUCMemberApplyHandler extends IQHandler {
                 JID ownerJID = MucUtils.getOwner(room);
                 LOGGER.info("房间拥有人：" + ownerJID.toBareJID());
 
-                MucNotification notification = MUCNotificationDao.getNotification(ownerJID.getNode(), roomJID.toBareJID(), NotificationType.APPLY.getValue());
+                // 是否有申请
+                MucNotification notification = MUCNotificationDao.getNotificationByFrom(userJID.toBareJID(), roomJID.toBareJID(), NotificationType.APPLY.getValue());
                 if (notification != null) {
                     if (notification.getStatus() == NotificationStatus.DEFAULT.getValue()) {
                         LOGGER.info("有加入申请未处理");
